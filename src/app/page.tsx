@@ -1,7 +1,6 @@
 import { bookService } from "../../service/BookService"; // Ajuste o caminho de importação conforme sua estrutura
-import { Book } from "../../libs/domain/book/Book";
 import BookList from "./_component/BookList"; // Componente que vamos criar
-
+import { IBook } from "../../libs/domain/book/Book";
 /**
  *  "../../libs/domain/book/Book";
  * Esta é uma Server Component (Componente de Servidor) do Next.js.
@@ -11,7 +10,7 @@ import BookList from "./_component/BookList"; // Componente que vamos criar
 export default async function Home() {
   // 1. Buscando os dados do Service Layer
   // Como estamos em um Server Component, não precisamos de hooks como 'useState' ou 'useEffect'.
-  const booksData = await bookService.getAllBooks();
+  const booksData: IBook[] = await bookService.getAllBooks();
 
   // 2. Mapeando os dados brutos para nossas classes de Domínio (Opcional, mas boa prática)
   //const books = booksData.map((bookData) => new Book(bookData));
@@ -22,11 +21,6 @@ export default async function Home() {
 
       {/* 3. Passando a lista para um componente de apresentação */}
       <BookList books={booksData} />
-
-      {/* Aqui viriam os outros componentes que você tinha: 
-          <HeroCarousel />
-          <FooterNav /> 
-      */}
     </main>
   );
 }

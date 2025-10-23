@@ -3,12 +3,12 @@
 "use client";
 
 import React from "react";
-import { Book } from "../../../libs/domain/book/Book";
+import { IBook } from "../../../libs/domain/book/Book";
 import BookCard from "./BookCard"; // Componente que vamos criar
 
 // Definição das Props (Propriedades) do componente
 interface BookListProps {
-  books: Book[];
+  books: IBook[];
 }
 
 const BookList: React.FC<BookListProps> = ({ books }) => {
