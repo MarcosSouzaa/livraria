@@ -4,13 +4,15 @@
 import React from "react";
 import Image from "next/image"; // Componente de imagem otimizado do Next.js
 import Link from "next/link"; // Componente de link do Next.js
-import { Book } from "../../../libs/domain/book/Book";
+import { Book, IBook } from "../../../libs/domain/book/Book";
 
 interface BookCardProps {
-  book: Book;
+  book: IBook;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
+const BookCard: React.FC<BookCardProps> = ({ book: BookData }) => {
+  const book = new Book(BookData);
+
   return (
     // Link para a página de detalhes (que criaremos depois: /book/[id])
     <Link
@@ -22,8 +24,8 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         <Image
           src={book.coverImageUrl}
           alt={`Capa do livro: ${book.title}`}
-          layout="fill" // Preenche o contêiner
-          objectFit="cover"
+          fill={true} // Preenche o contêiner
+          style={{ objectFit: "cover" }}
         />
       </div>
       <div className="p-4">
