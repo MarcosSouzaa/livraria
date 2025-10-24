@@ -45,7 +45,7 @@ export default function CartPage() {
               <div className="flex-1 min-w-0">
                 <Link
                   href={`/book/${item.book.id}`}
-                  className="text-xl font-semibold hover:text-blue-600 transition-colors truncate"
+                  className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
                 >
                   {item.book.title}
                 </Link>

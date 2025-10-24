@@ -7,6 +7,7 @@ import Link from "next/link"; // Componente de link do Next.js
 import { Book, IBook } from "../../../libs/domain/book/Book";
 import { useCart } from "../provider/CartProvider"; // <-- NOVO: Importa o hook do carrinho
 import ImageModal from "./ImageModal";
+import BookDetailModal from "./BookDetailModal";
 
 interface BookCardProps {
   book: IBook;
@@ -21,6 +22,19 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
 
   // NOVO: Estado para controlar a visibilidade do modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  //AUMENTA A IMAGEM NO CLICK
+  const handleImageClick = (e: React.MouseEvent) => {
+    // Aqui não precisamos mais de e.preventDefault() porque o modal agora é a experiência principal de clique.
+    // MAS, como o botão "Adicionar" está DENTRO do <Link>, é mais seguro remover o evento de clique da imagem.
+    // Vamos garantir que a navegação para a página de detalhes (Link) seja o comportamento padrão, e o modal
+    //  só seja aberto se removermos o <Link> pai.
+    // NOVO COMPORTAMENTO: Se clicar em QUALQUER lugar que não seja o botão Adicionar, VAI para a página de detalhes.
+    // Se você quer que o CLIQUE NA IMAGEM ABRA O MODAL e o clique no texto VÁ PARA A PÁGINA:
+    e.preventDefault();
+    e.stopPropagation();
+    setIsModalOpen(true);
+  };
 
   // NOVO: Handler para adicionar o livro ao carrinho
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -43,12 +57,13 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
       className="block border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group" // Adicione 'group' para estilos mais avançados, se necessário
     >
       {/* w-full e h-64 definem o tamanho */}
-      <div className="relative w-full h-64 bg-gray-200">
+      <div className="relative w-full h-64 bg-gray-200 cursor-zoom-in">
         <Image
           src={book.coverImageUrl}
           alt={`Capa do livro: ${book.title}`}
           fill={true}
           style={{ objectFit: "cover" }} // Garante que a imagem preencha o espaço sem distorcer
+          onClick={handleImageClick} //Clique para aumentar a imagem
         />
       </div>
       <div className="p-4">
@@ -104,10 +119,14 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
 
       {/* NOVO: Renderiza o modal se isModalOpen for true */}
       {isModalOpen && (
-        <ImageModal
-          src={book.coverImageUrl}
-          alt={`Capa do livro: ${book.title}`}
+        <BookDetailModal
+          bookData={bookData} // Passamos o objeto puro
           onClose={() => setIsModalOpen(false)}
+          // Reutilizamos a função addItem que já está no BookCard
+          onAddToCart={() => {
+            addItem(bookData);
+            setIsModalOpen(false);
+          }}
         />
       )}
     </Link>

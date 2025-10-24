@@ -28,7 +28,11 @@ const ImageModal: React.FC<ImageModalProps> = ({ src, alt, onClose }) => {
           className="rounded-lg shadow-2xl"
         />
         <button
-          onClick={onClose}
+          onClick={(e) => {
+            // 🚨 CRÍTICO: Novo código de clique
+            e.stopPropagation(); // Garante que o clique no X não afete o link pai do BookCard
+            onClose();
+          }}
           className="absolute top-4 right-4 text-white text-3xl bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-75"
         >
           &times;

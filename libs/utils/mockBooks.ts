@@ -7,7 +7,7 @@ import { IBook } from "../domain/book/Book";
 export const mockBooks: IBook[] = [
   {
     id: "a1b2c3d4",
-    title: "ANos Finais ",
+    title: "Anos Finais ",
     author: "Robert C. Martin",
     isbn: "978-8550804677",
     condition: "Novo",
