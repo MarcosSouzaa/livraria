@@ -1,6 +1,6 @@
 import { bookService } from "../../service/BookService"; // Ajuste o caminho de importação conforme sua estrutura
-import BookList from "./_component/BookList"; // Componente que vamos criar
 import { IBook } from "../../libs/domain/book/Book";
+import FilteredBookList from "./_component/FilteredBookList";
 /**
  *  "../../libs/domain/book/Book";
  * Esta é uma Server Component (Componente de Servidor) do Next.js.
@@ -20,7 +20,7 @@ export default async function Home() {
       <h1 className="text-3xl font-bold mb-8">Catálogo de Livros</h1>
 
       {/* 3. Passando a lista para um componente de apresentação */}
-      <BookList books={booksData} />
+      <FilteredBookList initialBooks={booksData} />
     </main>
   );
 }
