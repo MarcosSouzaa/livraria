@@ -63,7 +63,6 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
 
         {/* NOVO: Tag de Estoque com Tooltip */}
         <div className="relative inline-block">
-          {" "}
           {/* Contêiner para o tooltip */}
           <span
             className={`px-2 py-1 text-sm rounded ${
