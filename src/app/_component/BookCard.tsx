@@ -56,26 +56,38 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
           Condição: <span className="font-semibold">{book.condition}</span>
         </p>
 
-        {/* Chamamos a Lógica de Domínio para formatar o preço */}
+        {/* Preço */}
         <p className="text-2xl font-bold text-green-600 mb-2 mt-2">
           {book.getFormattedPrice()}
         </p>
 
-        {/* Chamamos a Lógica de Domínio para verificar disponibilidade */}
-        <span
-          className={`px-2 py-1 text-sm rounded ${
-            book.isAvailable()
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          } mb-3 inline-block`}
-        >
-          {book.isAvailable() ? "Em Estoque" : "Esgotado"}
-        </span>
+        {/* NOVO: Tag de Estoque com Tooltip */}
+        <div className="relative inline-block">
+          {" "}
+          {/* Contêiner para o tooltip */}
+          <span
+            className={`px-2 py-1 text-sm rounded ${
+              book.isAvailable()
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            } mb-3 inline-block cursor-pointer group-hover:block`} // cursor-pointer para indicar interatividade
+            title={
+              // <--- ATRIBUTO TITLE: O jeito mais simples de tooltip
+              book.isAvailable()
+                ? `Temos ${book.stock} unidades em estoque.`
+                : "Este livro está esgotado no momento."
+            }
+          >
+            {book.isAvailable() ? "Em Estoque" : "Esgotado"}
+          </span>
+          {/* Você pode construir um tooltip mais avançado com estado React se quiser,
+              mas o atributo 'title' é o mais simples e acessível. */}
+        </div>
 
-        {/* NOVO: Botão Adicionar ao Carrinho */}
+        {/* Botão Adicionar ao Carrinho */}
         <button
           onClick={handleAddToCart}
-          disabled={!book.isAvailable()} // Desabilita se estiver esgotado
+          disabled={!book.isAvailable()}
           className={`w-full mt-3 py-2 rounded font-bold transition-colors duration-300 
                 ${
                   book.isAvailable()
