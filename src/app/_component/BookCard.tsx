@@ -38,12 +38,13 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
       href={`/book/${book.id}`}
       className="block border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group" // Adicione 'group' para estilos mais avançados, se necessário
     >
+      {/* w-full e h-64 definem o tamanho */}
       <div className="relative w-full h-64 bg-gray-200">
         <Image
           src={book.coverImageUrl}
           alt={`Capa do livro: ${book.title}`}
           fill={true}
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover" }} // Garante que a imagem preencha o espaço sem distorcer
         />
       </div>
       <div className="p-4">

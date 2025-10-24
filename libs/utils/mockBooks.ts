@@ -44,7 +44,7 @@ export const mockBooks: IBook[] = [
     title: "Oxford Practice Grammar",
     author: "John Eastwood",
     isbn: "978-8573038186",
-    condition: "Usado",
+    condition: "Novo",
     price: 112.5,
     description: "New Edition - Now with tests",
     stock: 5,
