@@ -1,11 +1,12 @@
 // /src/app/_component/BookCard.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image"; // Componente de imagem otimizado do Next.js
 import Link from "next/link"; // Componente de link do Next.js
 import { Book, IBook } from "../../../libs/domain/book/Book";
 import { useCart } from "../provider/CartProvider"; // <-- NOVO: Importa o hook do carrinho
+import ImageModal from "./ImageModal";
 
 interface BookCardProps {
   book: IBook;
@@ -17,6 +18,9 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
 
   // Instanciando a CLASSE de domínio para usar os métodos de negócio (ex: isAvailable)
   const book = new Book(bookData);
+
+  // NOVO: Estado para controlar a visibilidade do modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // NOVO: Handler para adicionar o livro ao carrinho
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -97,6 +101,15 @@ const BookCard: React.FC<BookCardProps> = ({ book: bookData }) => {
           {book.isAvailable() ? "Adicionar ao Carrinho" : "Esgotado"}
         </button>
       </div>
+
+      {/* NOVO: Renderiza o modal se isModalOpen for true */}
+      {isModalOpen && (
+        <ImageModal
+          src={book.coverImageUrl}
+          alt={`Capa do livro: ${book.title}`}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </Link>
   );
 };
