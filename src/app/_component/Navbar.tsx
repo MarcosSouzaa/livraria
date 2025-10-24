@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
 
           {/* Implementação do Falar com WhatsApp (Próximo Requisito) */}
           <a
-            href="https://wa.me/5521999999999?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20sobre%20os%20livros."
+            href="https://wa.me/5521987323010?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20sobre%20os%20livros."
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-600 font-semibold hover:text-green-700 transition-colors"
