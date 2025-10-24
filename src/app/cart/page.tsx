@@ -28,7 +28,7 @@ export default function CartPage() {
           {items.map((item) => (
             <div
               key={item.book.id}
-              className="flex items-center border p-4 rounded-lg shadow-sm bg-white"
+              className="flex items-center border p-4 rounded-lg shadow-sm bg-white dark:bg-gray-800 dark:border-gray-700"
             >
               {/* NOVO: MINIATURA DA IMAGEM */}
               <div className="relative w-16 h-20 mr-4 flex-shrink-0">
@@ -45,38 +45,41 @@ export default function CartPage() {
               <div className="flex-1 min-w-0">
                 <Link
                   href={`/book/${item.book.id}`}
-                  className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
+                  className="text-xl font-semibold text-gray-900 dark:text-white hover:text-blue-600 transition-colors truncate"
                 >
                   {item.book.title}
                 </Link>
-                <p className="text-gray-600 text-sm">Por: {item.book.author}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  Por: {item.book.author}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-300">
                   Condição: {item.book.condition}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-300">
                   Estoque: {item.book.stock}
                 </p>
               </div>
 
-              {/* Quantidade e Botões (Mantido) */}
-              <div className="flex items-center space-x-3 mx-4">
+              {/* Quantidade e Botões */}
+              <div className="flex items-center space-x-3 mx-4 flex-shrink-0">
                 <button
                   onClick={() =>
                     updateQuantity(item.book.id, item.quantity - 1)
                   }
-                  className="bg-gray-200 p-1 rounded hover:bg-gray-300"
+                  // Ajuste: Fundo mais escuro no dark mode e texto branco
+                  className="bg-gray-300 dark:bg-gray-600 p-1 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-900 dark:text-white"
                   disabled={item.quantity <= 1}
                 >
                   -
                 </button>
-                <span className="font-medium w-6 text-center">
+                <span className="font-medium w-6 text-center text-gray-900 dark:text-white">
                   {item.quantity}
                 </span>
                 <button
                   onClick={() =>
                     updateQuantity(item.book.id, item.quantity + 1)
                   }
-                  className="bg-gray-200 p-1 rounded hover:bg-gray-300"
+                  className="bg-gray-300 dark:bg-gray-600 p-1 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-900 dark:text-white" // <-- CORREÇÃO DE CORES
                   disabled={item.quantity >= item.book.stock}
                 >
                   +
@@ -98,18 +101,23 @@ export default function CartPage() {
             </div>
           ))}
         </div>
+        {/* COLUNA DIREITA: Resumo e Checkout */}
+        {/* CORREÇÃO: Fundo */}
+        <div className="lg:w-1/4 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-lg h-fit">
+          {/*Título branco no dark mode */}
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+            Resumo do Pedido
+          </h2>
 
-        {/* COLUNA DIREITA: Resumo e Checkout (Mantido) */}
-        <div className="lg:w-1/4 bg-gray-50 p-6 rounded-lg shadow-lg h-fit">
-          <h2 className="text-2xl font-bold mb-4">Resumo do Pedido</h2>
+          {/*Texto cinza claro no dark mode */}
           <div className="flex justify-between text-lg font-medium mb-4">
-            <span>Subtotal:</span>
-            <span className="text-green-700">
+            <span className="text-gray-700 dark:text-gray-300">Subtotal:</span>
+            <span className="text-green-700 dark:text-green-400">
               R$ {subtotal.toFixed(2).replace(".", ",")}
             </span>
           </div>
-
-          <p className="text-sm text-gray-500 mb-6">
+          {/*CORREÇÃO: Texto cinza claro no dark mode */}
+          <p className="text-sm text-white dark:text-gray-200 mb-6">
             O frete e os impostos serão calculados na próxima etapa.
           </p>
 

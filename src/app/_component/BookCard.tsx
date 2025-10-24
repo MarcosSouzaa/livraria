@@ -6,7 +6,6 @@ import Image from "next/image"; // Componente de imagem otimizado do Next.js
 import Link from "next/link"; // Componente de link do Next.js
 import { Book, IBook } from "../../../libs/domain/book/Book";
 import { useCart } from "../provider/CartProvider"; // <-- NOVO: Importa o hook do carrinho
-import ImageModal from "./ImageModal";
 import BookDetailModal from "./BookDetailModal";
 
 interface BookCardProps {
