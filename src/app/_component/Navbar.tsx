@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
           href="/"
           className="text-2xl font-bold text-gray-800 hover:text-blue-600 transition-colors"
         >
-          Livraria Online
+          EDUCA VITRINE+
         </Link>
 
         {/* NAVEGAÇÃO PRINCIPAL (Simplificada) */}

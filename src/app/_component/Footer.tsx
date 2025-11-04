@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           {/* Coluna 1: Logo e Descrição */}
           <div>
             <h3 className="text-2xl font-bold text-blue-400 mb-4">
-              Livraria Online
+              Educa Vitrine+
             </h3>
             <p className="text-sm text-gray-400">
               Conectando leitores a grandes obras, oferecendo livros novos e
@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
                   href="mailto:contato@livrariaonline.com"
                   className="hover:text-blue-400 transition-colors"
                 >
-                  contato@livrariaonline.com
+                  contato@educavitrinemais.com
                 </a>
               </li>
               <li className="flex items-center">

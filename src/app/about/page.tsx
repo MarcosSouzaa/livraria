@@ -4,11 +4,11 @@ import React from "react";
 export default function AboutPage() {
   return (
     <main className="container mx-auto p-4 md:p-10 min-h-screen">
-      <h1 className="text-4xl font-bold mb-6">Sobre a Livraria Online</h1>
+      <h1 className="text-4xl font-bold mb-6">Sobre a Educa Vitrine+</h1>
 
       <div className="max-w-3xl text-lg text-gray-700 dark:text-gray-300 space-y-4">
         <p>
-          Nossa livraria nasceu com o objetivo de conectar leitores a grandes
+          A Educa Vitrine+ nasceu com o objetivo de conectar leitores a grandes
           obras, oferecendo tanto livros novos quanto usados, garantindo preços
           justos e sustentabilidade.
         </p>
