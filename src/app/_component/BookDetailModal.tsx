@@ -1,14 +1,15 @@
-// src/app/_component/BookDetailModal.tsx
+// src/app/_component/BookDetailModal.tsx (VERSÃO FINAL CORRIGIDA)
 "use client";
 
 import React from "react";
 import Image from "next/image";
+// 🚨 Nota: Altere o caminho para o alias '@' após configurar o tsconfig.json
 import { Book, IBook } from "../../../libs/domain/book/Book";
 
 interface BookDetailModalProps {
-  bookData: IBook; // Passamos os dados puros
+  bookData: IBook;
   onClose: () => void;
-  onAddToCart: () => void; // Para adicionar ao carrinho direto do modal
+  onAddToCart: () => void; // Função que Adiciona e Redireciona (do componente PAI)
 }
 
 const BookDetailModal: React.FC<BookDetailModalProps> = ({
@@ -16,11 +17,15 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
   onClose,
   onAddToCart,
 }) => {
-  const book = new Book(bookData); // Usamos a classe para métodos de domínio
+  const book = new Book(bookData);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Importante
-    onAddToCart(); // Chama a função que adiciona no BookCard.tsx
+    e.stopPropagation();
+    // 1. Chama a função de adicionar e redirecionar (implementada no PAI)
+    onAddToCart();
+
+    // 🚨 CORREÇÃO: Fecha o modal imediatamente após o clique
+    onClose();
   };
 
   return (
@@ -28,34 +33,37 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
       className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
       onClick={onClose} // Fecha ao clicar fora
     >
+      {" "}
       <div
         className="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden max-w-4xl w-full h-[85vh] md:h-[90vh] flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()} // Evita fechar ao clicar dentro
       >
-        {/* LADO ESQUERDO: IMAGEM GRANDE */}
+        {/* LADO ESQUERDO: IMAGEM GRANDE */}{" "}
         <div className="relative w-full md:w-1/2 h-1/2 md:h-full bg-gray-200 flex-shrink-0">
+          {" "}
           <Image
             src={book.coverImageUrl}
             alt={`Capa do livro: ${book.title}`}
             fill={true}
-            style={{ objectFit: "contain" }} // Mostra a imagem completa
+            style={{ objectFit: "contain" }}
             className="p-4"
-          />
+          />{" "}
         </div>
-
-        {/* LADO DIREITO: DETALHES */}
+        {/* LADO DIREITO: DETALHES */}{" "}
         <div className="p-6 md:w-1/2 overflow-y-auto">
+          {" "}
           <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
-            {book.title}
-          </h2>
+            {book.title} {" "}
+          </h2>{" "}
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
-            Por: {book.author}
+            Por: {book.author}{" "}
           </p>
-
+          {/* ... Div de preço/estoque ... */}{" "}
           <div className="flex justify-between items-center mb-4">
+            {" "}
             <p className="text-4xl font-extrabold text-green-600">
-              {book.getFormattedPrice()}
-            </p>
+              {book.getFormattedPrice()}{" "}
+            </p>{" "}
             <span
               className={`px-3 py-1 text-sm rounded font-semibold ${
                 book.isAvailable()
@@ -68,39 +76,38 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
                   : "Esgotado"
               }
             >
-              {book.isAvailable() ? "Em Estoque" : "Esgotado"}
-            </span>
+              {book.isAvailable() ? "Em Estoque" : "Esgotado"}{" "}
+            </span>{" "}
           </div>
-
+          {/* ... Descrição e Detalhes ... */}{" "}
           <p className="text-gray-700 dark:text-gray-300 mb-4">
-            <span className="font-semibold">Condição:</span> {book.condition}
-          </p>
+            <span className="font-semibold">Condição:</span> {book.condition}{" "}
+          </p>{" "}
           <p className="text-gray-700 dark:text-gray-300 mb-6">
-            <span className="font-semibold">ISBN:</span> {book.isbn}
-          </p>
-
+            <span className="font-semibold">ISBN:</span> {book.isbn}{" "}
+          </p>{" "}
           <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-            Descrição
-          </h3>
+            Descrição{" "}
+          </h3>{" "}
           <p className="text-gray-700 dark:text-gray-400 mb-8">
-            {book.description}
+            {book.description}{" "}
           </p>
-
-          {/* Botão Adicionar ao Carrinho */}
+          {/* Botão Adicionar ao Carrinho */}{" "}
           <button
             onClick={handleAddToCart}
             disabled={!book.isAvailable()}
-            className={`w-full py-3 rounded-lg font-bold transition-colors duration-300 
-                  ${
-                    book.isAvailable()
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                  }`}
+            className={`w-full py-3 rounded-lg font-bold transition-colors duration-300 
+${
+  book.isAvailable()
+    ? "bg-blue-600 text-white hover:bg-blue-700"
+    : "bg-gray-400 text-gray-700 cursor-not-allowed"
+}`}
           >
-            {book.isAvailable() ? "Adicionar ao Carrinho" : "Esgotado"}
-          </button>
-        </div>
-
+            {" "}
+            {book.isAvailable() ? "Adicionar ao Carrinho" : "Esgotado"}{" "}
+          </button>{" "}
+        </div>{" "}
+        {/* Fim do LADO DIREITO: DETALHES */}
         {/* Botão de Fechar no canto superior direito do modal */}
         <button
           onClick={(e) => {
@@ -110,11 +117,12 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
           className="absolute top-2 right-2 text-gray-700 dark:text-white text-3xl hover:text-red-500 transition-colors"
           aria-label="Fechar"
         >
+          {" "}
           &times;
         </button>
       </div>
     </div>
   );
-};
+}; // Fim da função BookDetailModal
 
 export default BookDetailModal;

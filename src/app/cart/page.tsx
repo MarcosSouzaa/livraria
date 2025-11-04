@@ -1,21 +1,37 @@
-// src/app/cart/page.tsx
+// src/app/cart/page.tsx (REVISADO - Conexão Checkout)
 "use client";
 
 import React from "react";
 import { useCart } from "../provider/CartProvider";
 import { CartItem } from "../../../libs/domain/cart/CartItem";
 import Link from "next/link";
-import Image from "next/image"; // <--- NOVO: Importando o componente Image
+import Image from "next/image";
 
 // Componente de Cliente para gerenciar a página de Carrinho
 export default function CartPage() {
   // ... (Código do useCart e items) ...
   const { cartItems, subtotal, removeItem, updateQuantity } = useCart();
+  // Nota: Mapear para new CartItem() aqui pode ser redundante se o CartProvider já retorna ICartItem (que tem totalPrice),
+  // mas vamos manter o padrão que você usa.
   const items = cartItems.map((item) => new CartItem(item.book, item.quantity));
 
   // ... (Código para Carrinho Vazio) ...
   if (items.length === 0) {
-    // ...
+    // ... (Seu código para carrinho vazio) ...
+    return (
+      <div className="container mx-auto p-4 md:p-10 min-h-screen text-center">
+        <h1 className="text-4xl font-bold mb-8">Seu Carrinho está Vazio</h1>
+        <p className="text-xl text-gray-500 dark:text-gray-400">
+          Parece que você ainda não adicionou nenhum livro.
+        </p>
+        <Link
+          href="/"
+          className="mt-6 inline-block py-3 px-6 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Voltar ao Catálogo
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -30,10 +46,10 @@ export default function CartPage() {
               key={item.book.id}
               className="flex items-center border p-4 rounded-lg shadow-sm bg-white dark:bg-gray-800 dark:border-gray-700"
             >
-              {/* NOVO: MINIATURA DA IMAGEM */}
+              {/* MINIATURA DA IMAGEM */}
               <div className="relative w-16 h-20 mr-4 flex-shrink-0">
                 <Image
-                  src={item.book.coverImageUrl} // Usamos a URL do objeto IBook
+                  src={item.book.coverImageUrl}
                   alt={`Capa de ${item.book.title}`}
                   fill={true}
                   style={{ objectFit: "cover" }}
@@ -66,7 +82,6 @@ export default function CartPage() {
                   onClick={() =>
                     updateQuantity(item.book.id, item.quantity - 1)
                   }
-                  // Ajuste: Fundo mais escuro no dark mode e texto branco
                   className="bg-gray-300 dark:bg-gray-600 p-1 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-900 dark:text-white"
                   disabled={item.quantity <= 1}
                 >
@@ -79,14 +94,14 @@ export default function CartPage() {
                   onClick={() =>
                     updateQuantity(item.book.id, item.quantity + 1)
                   }
-                  className="bg-gray-300 dark:bg-gray-600 p-1 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-900 dark:text-white" // <-- CORREÇÃO DE CORES
+                  className="bg-gray-300 dark:bg-gray-600 p-1 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-900 dark:text-white"
                   disabled={item.quantity >= item.book.stock}
                 >
                   +
                 </button>
               </div>
 
-              {/* Preço Total e Remover (Mantido) */}
+              {/* Preço Total e Remover */}
               <div className="flex-shrink-0 text-right">
                 <p className="text-lg font-bold text-green-700">
                   {item.getFormattedTotal()}
@@ -102,28 +117,28 @@ export default function CartPage() {
           ))}
         </div>
         {/* COLUNA DIREITA: Resumo e Checkout */}
-        {/* CORREÇÃO: Fundo */}
         <div className="lg:w-1/4 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-lg h-fit">
-          {/*Título branco no dark mode */}
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
             Resumo do Pedido
           </h2>
 
-          {/*Texto cinza claro no dark mode */}
           <div className="flex justify-between text-lg font-medium mb-4">
             <span className="text-gray-700 dark:text-gray-300">Subtotal:</span>
             <span className="text-green-700 dark:text-green-400">
               R$ {subtotal.toFixed(2).replace(".", ",")}
             </span>
           </div>
-          {/*CORREÇÃO: Texto cinza claro no dark mode */}
           <p className="text-sm text-white dark:text-gray-200 mb-6">
             O frete e os impostos serão calculados na próxima etapa.
           </p>
 
-          <button className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors">
+          {/* 🚨 CORREÇÃO PRINCIPAL AQUI: Substituindo <button> por <Link> */}
+          <Link
+            href="/checkout"
+            className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors block text-center"
+          >
             Prosseguir para o Checkout
-          </button>
+          </Link>
         </div>
       </div>
     </div>

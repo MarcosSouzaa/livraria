@@ -1,62 +1,55 @@
-// src/app/book/[id]/_component/AddToCartButton.tsx
+// src/app/book/[id]/_component/AddToCartButton.tsx (AJUSTADO)
 "use client";
 
-import React from "react";
-import { useCart } from "../../../provider/CartProvider";
-// Ajuste o caminho para a sua estrutura correta (libs/domain/book/Book)
+import React, { useState } from "react";
 import { IBook } from "../../../../../libs/domain/book/Book";
 
 interface AddToCartButtonProps {
   book: IBook;
+  // 🚨 CORREÇÃO: Adicione a nova prop de função que será chamada ao clicar
+  onAddToCart: () => void;
 }
 
-const AddToCartButton: React.FC<AddToCartButtonProps> = ({ book }) => {
-  const { addItem, cartItems } = useCart();
+const AddToCartButton: React.FC<AddToCartButtonProps> = ({
+  book,
+  onAddToCart,
+}) => {
+  // Você pode manter o estado local para feedback visual aqui, se tiver:
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  // Verifica se o livro já está no carrinho
-  const currentItem = cartItems.find((item) => item.book.id === book.id);
-  const isInStock = book.stock > 0;
+  const handleClick = () => {
+    // 1. Chama a função passada pelo pai (BookDetailClient)
+    onAddToCart();
 
-  // Verifica se a quantidade máxima (estoque) foi atingida
-  const isMaxQuantity = currentItem
-    ? currentItem.quantity >= book.stock
-    : false;
-
-  const handleAddToCart = () => {
-    if (isInStock) {
-      addItem(book);
-    }
+    // 2. Lógica de feedback visual (opcional)
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 2000);
   };
 
-  if (!isInStock) {
-    return (
-      <button
-        disabled
-        className="py-3 px-8 bg-gray-400 text-white font-bold rounded-lg cursor-not-allowed"
-      >
-        Esgotado
-      </button>
-    );
-  }
-
-  if (isMaxQuantity) {
-    return (
-      <button
-        disabled
-        className="py-3 px-8 bg-yellow-600 text-white font-bold rounded-lg cursor-not-allowed"
-      >
-        Máximo no Carrinho
-      </button>
-    );
-  }
+  // O botão deve estar desabilitado se não houver estoque
+  const isDisabled = !book.stock || book.stock <= 0;
 
   return (
-    <button
-      onClick={handleAddToCart}
-      className="py-3 px-8 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      Adicionar ao Carrinho
-    </button>
+    <div className="relative">
+      <button
+        onClick={handleClick} // 🚨 Chama o novo handler
+        disabled={isDisabled}
+        className={`w-full py-3 rounded-lg font-bold transition-colors duration-300 ${
+          isDisabled
+            ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+            : "bg-blue-600 text-white hover:bg-blue-700"
+        }`}
+      >
+        {isDisabled ? "Esgotado" : "Adicionar ao Carrinho"}
+      </button>
+
+      {/* Mensagem de sucesso (opcional) */}
+      {showSuccessMessage && (
+        <div className="absolute top-full mt-2 w-full text-center p-2 bg-green-500 text-white rounded-lg shadow-lg">
+          Adicionado ao carrinho!
+        </div>
+      )}
+    </div>
   );
 };
 
