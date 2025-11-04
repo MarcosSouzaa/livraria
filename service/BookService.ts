@@ -1,50 +1,120 @@
-/*Vamos criar um service que, por enquanto, apenas retorna os dados mockados, simulando o acesso
- ao banco de dados (que será o Firebase em breve). */
-// service/BookService.ts
+// src/service/BookService.ts (REVISADO)
 
+import { db } from "./firebase";
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import { IBook } from "../libs/domain/book/Book";
-import { mockBooks } from "../libs/utils/mockBooks";
 
 /**
- * Interface que define o "Contrato" do nosso BookService.
+ * Service Layer para operações de Livros, conectado ao Firestore.
  */
-interface IBookService {
-  getAllBooks(): Promise<IBook[]>;
-  getBookById(id: string): Promise<IBook | null>;
-}
+export class BookService {
+  private readonly collectionName = "books";
 
-/**
- * Implementação do Serviço de Livros.
- * Por enquanto, simula a comunicação com um banco de dados usando dados mockados.
- */
-export class BookService implements IBookService {
   /**
-   * Retorna todos os livros.
-   * Simula um pequeno delay para imitar uma chamada de rede.
+   * Busca todos os livros da coleção 'books' no Firestore.
+   * @returns Uma Promise que resolve para um array de IBook.
    */
   async getAllBooks(): Promise<IBook[]> {
-    // Simulando a latência do DB/API
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Em um mundo real, aqui seria: return db.collection('books').get();
-    return mockBooks;
+    return this.getFilteredBooks(undefined, undefined);
   }
 
   /**
-   * Retorna um livro específico pelo ID.
+   * Busca livros com filtros opcionais de pesquisa e condição.
    */
-  async getBookById(id: string): Promise<IBook | null> {
-    // Simulando a latência
-    await new Promise((resolve) => setTimeout(resolve, 300));
+  async getFilteredBooks(
+    searchTerm?: string,
+    condition?: string // Recebe 'Novo' ou 'Usado' da URL
+  ): Promise<IBook[]> {
+    try {
+      // Array para armazenar todas as cláusulas where e order.
+      const filters = [];
 
-    const book = mockBooks.find((b) => b.id === id);
+      // 1. FILTRO DE CONDIÇÃO (Novo/Usado)
+      // Se a URL contém ?condition=Novo, este filtro será aplicado.
+      if (condition && (condition === "Novo" || condition === "Usado")) {
+        // A string deve ser idêntica ao valor no Firestore (case-sensitive)
+        filters.push(where("condition", "==", condition));
+      }
 
-    // Retorna o livro ou null se não for encontrado
-    return book || null;
+      // 2. FILTRO DE PESQUISA POR PREFIXO (no campo 'title')
+      /*
+      if (searchTerm && searchTerm.trim() !== "") {
+        const term = searchTerm.toLowerCase();
+        // Cláusulas where para busca por prefixo (exige índice no Firestore)
+        filters.push(where("title", ">=", term));
+        filters.push(where("title", "<=", term + "\uf8ff"));
+        // filters.push(orderBy("title")); // Opcional, mas recomendado para buscas de prefixo
+      }
+      */
+
+      // 3. Constrói a consulta usando todos os filtros
+      // Se 'filters' estiver vazio, ele retorna todos os documentos (booksQuery = collection(db, this.collectionName))
+      const booksQuery = query(collection(db, this.collectionName), ...filters);
+
+      // 4. EXECUTA A CONSULTA
+      const bookSnapshot = await getDocs(booksQuery);
+
+      // 5. MAPEIA OS RESULTADOS
+      const bookList = bookSnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          author: data.author,
+          isbn: data.isbn,
+          condition: data.condition,
+          price: data.price,
+          description: data.description,
+          stock: data.stock,
+          coverImageUrl: data.coverImageUrl,
+        } as IBook;
+      });
+
+      return bookList;
+    } catch (error) {
+      console.error("Erro ao buscar livros filtrados do Firestore:", error);
+      // Retornamos um array vazio para não quebrar o frontend
+      return [];
+    }
   }
 
-  // Futuramente, teremos: saveBook, deleteBook, etc.
+  /**
+   * Busca um livro pelo seu ID (ID do documento no Firestore).
+   */
+  async getBookById(id: string): Promise<IBook | null> {
+    try {
+      const bookRef = doc(db, this.collectionName, id);
+      const bookSnap = await getDoc(bookRef);
+
+      if (bookSnap.exists()) {
+        const data = bookSnap.data();
+        return {
+          id: bookSnap.id,
+          title: data.title,
+          author: data.author,
+          isbn: data.isbn,
+          condition: data.condition,
+          price: data.price,
+          description: data.description,
+          stock: data.stock,
+          coverImageUrl: data.coverImageUrl,
+        } as IBook;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(`Erro ao buscar livro com ID ${id}:`, error);
+      return null;
+    }
+  }
 }
 
-// Exportamos uma instância para ser facilmente importada (Singleton)
+// 🚨 EXPORTAÇÃO SINGLETON (DEPOIS DA CLASSE)
 export const bookService = new BookService();

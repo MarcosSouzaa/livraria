@@ -1,4 +1,4 @@
-// src/app/provider/CartProvider.tsx
+// src/app/provider/CartProvider.tsx (COMPLETO E REVISADO)
 "use client";
 
 import React, {
@@ -7,12 +7,15 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useEffect,
 } from "react";
 import { IBook } from "../../../libs/domain/book/Book";
 import { CartItem, ICartItem } from "../../../libs/domain/cart/CartItem";
 
+const CART_STORAGE_KEY = "livraria-online-cart";
+
 // ----------------------------------------------------------------------
-// 1. Tipagem do Contexto (O Contrato que o CartProvider oferece)
+// 1. Tipagem do Contexto
 // ----------------------------------------------------------------------
 
 interface ICartContext {
@@ -29,11 +32,12 @@ interface ICartContext {
 // 2. Criação do Contexto
 // ----------------------------------------------------------------------
 
-// Inicializamos com valores padrão que correspondem à tipagem
+// 🚨 CORREÇÃO DE TIPAGEM: Inicialização COMPLETA.
 const defaultContextValue: ICartContext = {
   cartItems: [],
   subtotal: 0,
   totalItems: 0,
+  // 🚨 Propriedades de função precisam ser inicializadas
   addItem: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
@@ -42,17 +46,17 @@ const defaultContextValue: ICartContext = {
 
 const CartContext = createContext<ICartContext>(defaultContextValue);
 
-// Hook personalizado para fácil consumo do contexto
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
+    // Isso é útil para depuração
     throw new Error("useCart deve ser usado dentro de um CartProvider");
   }
   return context;
 };
 
 // ----------------------------------------------------------------------
-// 3. O Componente Provedor (A lógica do carrinho)
+// 3. O Componente Provedor (Com Persistência)
 // ----------------------------------------------------------------------
 
 interface CartProviderProps {
@@ -60,67 +64,93 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  // Estado que guarda a lista de itens no carrinho
-  const [items, setItems] = useState<ICartItem[]>([]);
+  // 🚨 Persistência 1: Inicializa lendo do localStorage
+  const [items, setItems] = useState<ICartItem[]>(() => {
+    // Garante que só roda no navegador (Client-side)
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        try {
+          const parsedItems = JSON.parse(savedCart);
+          // Mapeia de volta para instâncias de CartItem
+          return parsedItems.map(
+            (itemData: { book: IBook; quantity: number }) =>
+              new CartItem(itemData.book, itemData.quantity)
+          );
+        } catch (e) {
+          console.error("Erro ao carregar carrinho do localStorage", e);
+          return [];
+        }
+      }
+    }
+    return [];
+  });
 
-  // Lógica de Domínio: Adicionar um item ao carrinho
+  // 🚨 Persistência 2: Salva no localStorage sempre que 'items' muda
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (items.length > 0) {
+        // Salva apenas os dados necessários (book e quantity)
+        const itemsToSave = items.map((item) => ({
+          book: item.book,
+          quantity: item.quantity,
+        }));
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(itemsToSave));
+      } else {
+        // Se estiver vazio, limpa o armazenamento
+        localStorage.removeItem(CART_STORAGE_KEY);
+      }
+    }
+  }, [items]);
+
+  // --- Lógica de Domínio (addItem, removeItem, updateQuantity, clearCart) ---
+
+  // Adicionar um item ao carrinho
   const addItem = useCallback((book: IBook, quantity: number = 1) => {
     setItems((currentItems) => {
       const existingItemIndex = currentItems.findIndex(
         (item) => item.book.id === book.id
       );
-
       if (existingItemIndex > -1) {
-        // Se o item JÁ EXISTE: Aumenta a quantidade
         const updatedItems = [...currentItems];
         const existingCartItem = new CartItem(
           updatedItems[existingItemIndex].book,
           updatedItems[existingItemIndex].quantity
         );
-
         try {
           existingCartItem.increaseQuantity(quantity);
         } catch (error) {
-          // Tratamento de erro de estoque (se implementado)
           console.error(error);
           return currentItems;
         }
-
         updatedItems[existingItemIndex] = existingCartItem;
         return updatedItems;
       } else {
-        // Se o item NÃO EXISTE: Adiciona um novo
         const newCartItem = new CartItem(book, quantity);
         return [...currentItems, newCartItem];
       }
     });
   }, []);
 
-  // Lógica de Domínio: Remover um item do carrinho
+  // Remover um item do carrinho
   const removeItem = useCallback((bookId: string) => {
     setItems((currentItems) =>
       currentItems.filter((item) => item.book.id !== bookId)
     );
   }, []);
 
-  // Lógica de Domínio: Atualizar a quantidade de um item
+  // Atualizar a quantidade de um item
   const updateQuantity = useCallback((bookId: string, newQuantity: number) => {
     setItems((currentItems) => {
       const updatedItems = currentItems
         .map((item) => {
           if (item.book.id === bookId) {
-            // Se a nova quantidade for zero ou menos, remove o item
             if (newQuantity <= 0) return null;
-
-            // Cria uma nova instância da classe para garantir a lógica de domínio (stock check)
             const updatedCartItem = new CartItem(item.book, newQuantity);
-
-            // Regra de Negócio: Não deixar a quantidade ultrapassar o estoque
+            // Regra de Negócio: Limita ao estoque
             if (updatedCartItem.quantity > updatedCartItem.book.stock) {
-              updatedCartItem.quantity = updatedCartItem.book.stock; // Limita ao estoque
+              updatedCartItem.quantity = updatedCartItem.book.stock;
             }
-
-            // Recalcula o total dentro do construtor/classe
             return updatedCartItem;
           }
           return item;
@@ -131,7 +161,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     });
   }, []);
 
-  // Lógica de Domínio: Limpar o carrinho
+  // Limpar o carrinho
   const clearCart = useCallback(() => {
     setItems([]);
   }, []);
