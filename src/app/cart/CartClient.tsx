@@ -1,5 +1,3 @@
-// 🎯🎯 CÓDIGO CORRIGIDO PARA: src/app/cart/CartClient.tsx 🎯🎯
-
 "use client";
 
 import React from "react";
