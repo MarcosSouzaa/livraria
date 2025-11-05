@@ -1,7 +1,7 @@
 // src/app/book/[id]/page.tsx   . ../_component/AddToCartButton";
 
 import React from "react";
-import { BookService } from "../../../../service/BookService";
+import { BookService } from "../../../service/BookService";
 import { IBook } from "../../../../libs/domain/book/Book";
 import AddToCartButton from "./_component/AddToCartButton";
 

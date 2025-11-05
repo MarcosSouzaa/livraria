@@ -9,7 +9,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { IBook } from "../libs/domain/book/Book";
+import { IBook } from "../../libs/domain/book/Book";
 
 /**
  * Service Layer para operações de Livros, conectado ao Firestore.

@@ -1,6 +1,6 @@
 // src/app/page.tsx (CORREÇÃO FINAL DE SINTAXE E LÓGICA)
 
-import { BookService } from "../../service/BookService";
+import { BookService } from "../service/BookService";
 import { IBook } from "../../libs/domain/book/Book";
 import FilteredBookList from "./_component/FilteredBookList";
 // Importar React, se não for automático
